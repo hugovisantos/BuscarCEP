@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>        
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" name="viewport" />
+        <title>Buscar CEP</title>
+        <meta name="viewport" content="width=device-width", initial-scale="1" />
+        <link rel="stylesheet" href="CSS/bootstrap.min.css"/>
+        <script type="text/javascript" src="JS/bootstrap.min.js"></script>
+        
+        <!-- Adicionando Javascript -->
+        <script type="text/javascript">
+        
+        function limparCep() {
+
+                //Limpa valores do formulário de cep.
+                document.getElementById('rua').value=("");
+                document.getElementById('bairro').value=("");
+                document.getElementById('cidade').value=("");
+                document.getElementById('uf').value=("");
+                document.getElementById('ibge').value=("");
+        }
+
+        function retornoDeValor(conteudo) {
+            if (!("erro" in conteudo)) {
+                //Atualiza os campos com os valores.
+                document.getElementById('rua').value=(conteudo.logradouro);
+                document.getElementById('bairro').value=(conteudo.bairro);
+                document.getElementById('cidade').value=(conteudo.localidade);
+                document.getElementById('uf').value=(conteudo.uf);
+                document.getElementById('ibge').value=(conteudo.ibge);
+            } //end if.
+            else {
+                //CEP não Encontrado.
+                limparCep();
+                alert("CEP não encontrado.");
+            }
+        }
+            
+        function pesquisaCep(valor) {
+
+            //Nova variável "cep" somente com dígitos.
+            var cep = valor.replace(/\D/g, '');
+
+            //Verifica se campo cep possui valor informado.
+            if (cep != "") {
+
+                //Expressão regular para validar o CEP.
+                var validacep = /^[0-9]{8}$/;
+
+                //Valida o formato do CEP.
+                if(validacep.test(cep)) {
+
+                    //Preenche os campos com "..." enquanto consulta webservice.
+                    document.getElementById('rua').value="...";
+                    document.getElementById('bairro').value="...";
+                    document.getElementById('cidade').value="...";
+                    document.getElementById('uf').value="...";
+                    document.getElementById('ibge').value="...";
+
+                    //Cria um elemento javascript.
+                    var script = document.createElement('script');
+
+                    //Sincroniza com o callback.
+                    script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=retornoDeValor';
+
+                    //Insere script no documento e carrega o conteúdo.
+                    document.body.appendChild(script);
+
+                } //end if.
+                else {
+                    //cep é inválido.
+                    limparCep();
+                    alert("Formato de CEP inválido.");
+                }
+            } //end if.
+            else {
+                //cep sem valor, limpa formulário.
+                limparCep();
+            }
+        };
+
+        </script>
+    </head>
+
+    <body>
+        <!-- Inicio do formulario -->
+        <form method="get" action=".">        
+           <div class="container">
+                <br/>
+                <h2>
+                    Validar Cep
+                </h2> 
+                <br/>        
+            
+                <strong>Cep: </strong>
+                    <input name="cep" type="text" id="cep" value="" size="10" maxlength="9" onblur="pesquisaCep(this.value);" class="form-control" autofocus/>
+                <br/>
+                <strong>Rua: </strong> 
+                    <input name="rua" type="text" id="rua" size="60" class="form-control" autofocus/>
+                <br/>
+                <strong>Bairro: </strong> 
+                    <input name="bairro" type="text" id="bairro" size="40" class="form-control" autofocus/>
+                <br/>
+                <strong>Cidade: </strong> 
+                    <input name="cidade" type="text" id="cidade" size="40" class="form-control" autofocus/>
+                <br/>
+                <strong>Estado: </strong> 
+                    <input name="uf" type="text" id="uf" size="2" class="form-control" autofocus/>
+                <br/>
+                <strong>IBGE: </strong> 
+                    <input name="ibge" type="text" id="ibge" size="8" class="form-control" autofocus/>
+                <br/>
+            </div>
+        </form>
+          
+
+      <script src=""></script>
+    </body>
+
+    </html>
